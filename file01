@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISTJ Operating Manual — Data Analyst Edition</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        sage: {
+                            50: '#f4f7f5',
+                            100: '#e3ebe6',
+                            200: '#c6d7cd',
+                            300: '#9ebba9',
+                            400: '#749a84',
+                            500: '#537e66',
+                            600: '#3f6450',
+                            700: '#335041',
+                            800: '#2b4136',
+                            900: '#24362d',
+                        },
+                        parchment: '#f8f6f0'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar untuk estetika bersih */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            main {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-parchment text-slate-800 dark:bg-slate-950 dark:text-slate-200 font-sans antialiased transition-colors duration-200">
+
+    <!-- Top Navigation Bar (Mobile & Desktop) -->
+    <header class="sticky top-0 z-40 bg-parchment/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition" aria-label="Buka Menu">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-sage-700 text-white flex items-center justify-center font-mono font-semibold text-sm shadow-sm">
+                        Si
+                    </div>
+                    <div>
+                        <span class="font-semibold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white">ISTJ.manual</span>
+                        <span class="hidden sm:inline-block ml-2 text-xs font-mono px-2 py-0.5 rounded-full bg-sage-100 text-sage-800 dark:bg-sage-900/60 dark:text-sage-300">Data Analyst Edition</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search & Utility Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="relative hidden md:block">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="Cari bab atau topik..." class="pl-9 pr-4 py-1.5 text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-sage-600 w-56 transition">
+                </div>
+                <button id="printBtn" onclick="window.print()" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition flex items-center gap-1.5 text-xs font-medium" title="Cetak atau Simpan PDF">
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">PDF</span>
+                </button>
+                <button id="themeToggle" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition" title="Ganti Tema">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Progress Reading Bar -->
+        <div class="w-full h-1 bg-slate-200 dark:bg-slate-800">
+            <div id="readingProgress" class="h-full bg-sage-600 transition-all duration-150" style="width: 0%"></div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Overlay -->
+    <div id="mobileDrawer" class="fixed inset-0 z-50 hidden lg:hidden no-print">
+        <div id="drawerBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
+        <aside class="fixed top-0 left-0 bottom-0 w-72 bg-parchment dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-5 overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <span class="font-mono text-xs uppercase tracking-wider text-sage-700 dark:text-sage-400 font-semibold">Daftar Isi (22 Bab)</span>
+                <button id="closeDrawerBtn" class="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <input type="text" id="mobileSearchInput" placeholder="Filter bab..." class="w-full px-3 py-2 text-sm rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-sage-600">
+            </div>
+            <nav id="mobileNavList" class="space-y-1 text-sm"></nav>
+        </aside>
+    </div>
+
+    <!-- Main Layout Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
+        
+        <!-- Desktop Sticky Sidebar Navigation -->
+        <aside class="hidden lg:block w-72 shrink-0 no-print">
+            <div class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
+                <div class="mb-3 px-3 flex items-center justify-between">
+                    <span class="font-mono text-xs font-semibold uppercase tracking-wider text-sage-700 dark:text-sage-400">Indeks Manual</span>
+                    <span class="font-mono text-xs text-slate-400">22 Bab</span>
+                </div>
+                <nav id="desktopNavList" class="space-y-1 text-sm"></nav>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 min-w-0 max-w-3xl">
+            
+            <!-- Hero Cover Card -->
+            <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-200/80 dark:border-slate-800 shadow-xs mb-8">
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="font-mono text-xs px-3 py-1 rounded-full bg-sage-700 text-white font-medium">SYSTEM SPECIFICATION: ISTJ</span>
+                    <span class="font-mono text-xs px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Si • Te • Fi • Ne</span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-3">
+                    Manual Book Kepribadian: The Logistician
+                </h1>
+                <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                    Panduan operasional lengkap yang dikustomisasi khusus untuk arsitektur kognitifmu sebagai <strong class="text-slate-800 dark:text-slate-200 font-semibold">Freelancer Analisis Data</strong>—mencakup sistem kerja, manajemen stres, komunikasi klien, keuangan mandiri, hingga peta jalan 30 hari.
+                </p>
+                
+                <!-- Cognitive Stack Quick Bar -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div class="p-3 rounded-2xl bg-sage-50 dark:bg-sage-950/50 border border-sage-200/60 dark:border-sage-800/60">
+                        <div class="font-mono text-xs text-sage-700 dark:text-sage-400 font-semibold">01 • DOMINANT</div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm mt-0.5">Introverted Sensing (Si)</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Akurasi & Verifikasi</div>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60">
+                        <div class="font-mono text-xs text-slate-500 dark:text-slate-400 font-semibold">02 • AUXILIARY</div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm mt-0.5">Extraverted Thinking (Te)</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Logika & Sistem</div>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60">
+                        <div class="font-mono text-xs text-slate-500 dark:text-slate-400 font-semibold">03 • TERTIARY</div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm mt-0.5">Introverted Feeling (Fi)</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Integritas & Batas</div>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60">
+                        <div class="font-mono text-xs text-slate-500 dark:text-slate-400 font-semibold">04 • INFERIOR</div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm mt-0.5">Extraverted Intuition (Ne)</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Antisipasi Risiko</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chapters Container (Populated via JS for clean architecture & interactive features) -->
+            <div id="chaptersContainer" class="space-y-6"></div>
+
+            <!-- Interactive 30-Day Freelance Checklist Tracker -->
+            <section id="interactive-tracker" class="mt-8 bg-sage-800 text-white rounded-3xl p-6 sm:p-8 shadow-sm no-print">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="font-mono text-xs uppercase tracking-wider text-sage-200">Interactive Module</span>
+                        <h2 class="text-xl sm:text-2xl font-bold mt-1">Checklist Implementasi 30 Hari ISTJ</h2>
+                        <p class="text-sm text-sage-100/80 mt-1">Progres tersimpan otomatis di browser perangkatmu.</p>
+                    </div>
+                    <div class="bg-sage-900/70 px-4 py-2.5 rounded-2xl border border-sage-600/50 text-right">
+                        <div class="font-mono text-xs text-sage-300">COMPLETION RATE</div>
+                        <div id="checklistScore" class="font-mono text-xl font-bold text-white">0%</div>
+                    </div>
+                </div>
+                <div id="checklistItems" class="space-y-2.5"></div>
+            </section>
+
+            <!-- References Section -->
+            <section id="referensi" class="mt-8 bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-2.5 mb-4">
+                    <div class="p-2 rounded-xl bg-sage-100 dark:bg-sage-900/60 text-sage-700 dark:text-sage-300">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <span class="font-mono text-xs text-sage-700 dark:text-sage-400 uppercase font-semibold">Appendix</span>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Referensi Bacaan Pendukung</h2>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-5">
+                    Daftar literatur psikologi kognitif klasik dan otoritatif di balik kerangka manual operasional ini:
+                </p>
+                <div class="space-y-3" id="referencesContainer"></div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="mt-10 pb-8 text-center text-xs text-slate-400 font-mono">
+                ISTJ Operating Manual • Custom Data Analyst Edition • Built for Structured Execution
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-sage-700 text-white text-xs font-mono px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 no-print">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-sage-400 dark:text-white"></i>
+        <span id="toastMessage">Teks berhasil disalin</span>
+    </div>
+
+    <script>
+        // Data Lengkap 22 Bab Manual Book ISTJ
+        const manualChapters = [
+            {
+                num: "01",
+                title: "Tipe dan Ringkasan Utamamu",
+                category: "Core Identity",
+                content: `
+                    <p class="mb-3"><strong>ISTJ (Introverted, Sensing, Thinking, Judging)</strong> dikenal sebagai arsitek keteraturan, akurasi, dan keandalan. Kamu adalah tipe yang menjadikan fakta empiris dan konsistensi sebagai kompas utama.</p>
+                    <p>Sebagai seorang <strong>Freelancer Analisis Data</strong>, kamu tidak bekerja berdasarkan tebakan atau asumsi—kamu bekerja berdasarkan bukti nyata, struktur kode yang bersih, dan reproduktifitas hasil.</p>
+                `
+            },
+            {
+                num: "02",
+                title: "Teori di Balik Laporan Ini",
+                category: "Core Identity",
+                content: `
+                    <p class="mb-4">Laporan ini disusun berdasarkan kerangka teori <strong>Fungsi Kognitif Carl Jung</strong> dan indikator <strong>MBTI</strong>. Berbeda dengan tes permukaan yang hanya melihat huruf, teori ini membedah urutan cara otakmu menyerap informasi dan mengambil keputusan:</p>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="font-mono text-xs font-semibold text-sage-700 dark:text-sage-400">DOMINANT • Si</span>
+                            <h4 class="font-semibold text-sm text-slate-900 dark:text-white mt-0.5">Introverted Sensing</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Memori detail, standar kualitas tinggi, dan verifikasi berbasis pengalaman/data historis.</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="font-mono text-xs font-semibold text-sage-700 dark:text-sage-400">AUXILIARY • Te</span>
+                            <h4 class="font-semibold text-sm text-slate-900 dark:text-white mt-0.5">Extraverted Thinking</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Logika objektif, efisiensi sistem, metrik terukur, dan eksekusi jadwal secara disiplin.</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="font-mono text-xs font-semibold text-sage-700 dark:text-sage-400">TERTIARY • Fi</span>
+                            <h4 class="font-semibold text-sm text-slate-900 dark:text-white mt-0.5">Introverted Feeling</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Prinsip moral personal, integritas diri yang teguh, dan batas emosi privat yang kuat.</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                            <span class="font-mono text-xs font-semibold text-sage-700 dark:text-sage-400">INFERIOR • Ne</span>
+                            <h4 class="font-semibold text-sm text-slate-900 dark:text-white mt-0.5">Extraverted Intuition</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Eksplorasi kemungkinan abstrak di luar pola teruji (pemicu kecemasan saat ketidakpastian tinggi).</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                num: "03",
+                title: "Sekilas Tentang Kamu",
+                category: "Core Identity",
+                content: `
+                    <ul class="space-y-2.5">
+                        <li class="flex items-start gap-2.5"><span class="font-mono text-xs px-2 py-0.5 rounded bg-sage-100 dark:bg-sage-900/60 text-sage-800 dark:text-sage-300 mt-0.5">Nilai Inti</span><span>Integritas data, ketepatan waktu, kemandirian, dan kejelasan aturan main.</span></li>
+                        <li class="flex items-start gap-2.5"><span class="font-mono text-xs px-2 py-0.5 rounded bg-sage-100 dark:bg-sage-900/60 text-sage-800 dark:text-sage-300 mt-0.5">Gaya Kerja</span><span><em>Deep work</em> tanpa gangguan, dokumentasi rapi, dan tanggung jawab penuh dari hulu ke hilir.</span></li>
+                        <li class="flex items-start gap-2.5"><span class="font-mono text-xs px-2 py-0.5 rounded bg-sage-100 dark:bg-sage-900/60 text-sage-800 dark:text-sage-300 mt-0.5">Ciri Khas</span><span>Tenang di permukaan, sangat kritis terhadap ketidakkonsistenan logika, dan kebal terhadap drama kosong.</span></li>
+                    </ul>
+                `
+            },
+            {
+                num: "04",
+                title: "Cara Pikiranmu Bekerja",
+                category: "Cognitive Architecture",
+                content: `
+                    <p class="mb-3">Otakmu memproses dunia seperti sebuah <strong>sistem basis data relasional</strong>.</p>
+                    <div class="p-4 rounded-2xl bg-slate-900 text-slate-200 font-mono text-xs leading-relaxed">
+                        <div class="text-sage-400 mb-1">// Alur Pemrosesan Kognitif ISTJ</div>
+                        <div>1. INPUT_DATA &rarr; Fungsi <strong>Si</strong> memindai skema, anomali (<em>missing values</em>), & standar validasi historis.</div>
+                        <div class="mt-1">2. PIPELINE_EXEC &rarr; Fungsi <strong>Te</strong> menyusun algoritma paling efisien untuk transformasi data.</div>
+                        <div class="mt-1">3. OUTPUT_READY &rarr; Laporan visual empiris yang akurat dan siap digunakan klien.</div>
+                    </div>
+                `
+            },
+            {
+                num: "05",
+                title: "Kekuatan dan Titik Butamu",
+                category: "Cognitive Architecture",
+                content: `
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/50">
+                            <h4 class="font-semibold text-sm text-emerald-900 dark:text-emerald-300 mb-2 flex items-center gap-1.5">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i> Kekuatan Utama
+                            </h4>
+                            <ul class="space-y-2 text-xs text-slate-700 dark:text-slate-300">
+                                <li><strong>Akurasi Tingkat Tinggi:</strong> Mendeteksi anomali kode/dataset yang dilewatkan orang lain.</li>
+                                <li><strong>Keandalan (Dependability):</strong> Komitmen tenggat waktu ditepati 100%.</li>
+                                <li><strong>Integritas Metodologis:</strong> Menolak manipulasi angka demi menyenangkan pihak tertentu.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/70 dark:border-amber-800/50">
+                            <h4 class="font-semibold text-sm text-amber-900 dark:text-amber-300 mb-2 flex items-center gap-1.5">
+                                <i data-lucide="alert-triangle" class="w-4 h-4"></i> Titik Buta (Blind Spots)
+                            </h4>
+                            <ul class="space-y-2 text-xs text-slate-700 dark:text-slate-300">
+                                <li><strong>Terlalu Keras pada Diri Sendiri:</strong> Menganggap meleset sedikit dari rencana sebagai "kegagalan".</li>
+                                <li><strong>Resistensi Perubahan Mendadak:</strong> Terganggu oleh <em>scope creep</em> klien tanpa dokumen baru.</li>
+                                <li><strong>Terlalu Lurus (Blunt):</strong> Menyampaikan fakta tanpa bantalan emosional bagi klien sensitif.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                num: "06",
+                title: "Emosi, Stres, dan Pemulihan",
+                category: "Energy & Resilience",
+                content: `
+                    <ul class="space-y-3">
+                        <li><strong>Pemicu Stres Utama:</strong> Instruksi ambigu (<em>ambiguous requirements</em>), lingkungan tidak terstruktur, pengkhianatan kepercayaan, dan interupsi mendadak saat fokus penuh.</li>
+                        <li><strong>Reaksi Stres Ekstrem (<em>Ne Grip</em>):</strong> Saat kelelahan menumpuk, fungsi inferior <strong>Ne</strong> mengambil alih—pikiran terjebak dalam skenario terburuk (<em>catastrophizing</em>) dan kecemasan masa depan.</li>
+                        <li class="p-3.5 rounded-2xl bg-sage-50 dark:bg-sage-950/50 border border-sage-200 dark:border-sage-800">
+                            <strong class="text-sage-800 dark:text-sage-300">Protokol Pemulihan:</strong> Menarik diri sepenuhnya dari keramaian (<em>solitary recharge</em>), mematikan notifikasi kerja, memulihkan jam tidur, dan kembali ke rutinitas taktil yang menenangkan.
+                        </li>
+                    </ul>
+                `
+            },
+            {
+                num: "07",
+                title: "Energi dan Keseharian",
+                category: "Energy & Resilience",
+                content: `
+                    <p class="mb-3">Sebagai introvert sejati, rapat daring yang bertele-tele menguras baterai mentalmu dengan cepat. Kamu paling produktif pada jam-jam hening (dini hari atau pagi) saat bisa mengeksekusi analisis kompleks tanpa interupsi.</p>
+                    <p><strong>Aturan Energi:</strong> Terapkan batas waktu kerja ketat (<em>hard stop</em>) setiap hari agar energi tidak habis terserap oleh pesan klien di luar jam kerja.</p>
+                `
+            },
+            {
+                num: "08",
+                title: "Cara Berkomunikasi",
+                category: "Interpersonal & Social",
+                content: `
+                    <p class="mb-3">Gaya komunikasimu bersifat <strong>langsung, faktual, terstruktur, dan ringkas</strong>. Kamu lebih menyukai komunikasi tertulis (email, spesifikasi proyek, repositori kode) dibandingkan panggilan dadakan.</p>
+                    <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 text-xs">
+                        <strong>Tips Presentasi Klien:</strong> Saat menyampaikan temuan ke klien non-teknis, mulai dari <strong>kesimpulan bisnis (<em>bottom-line insight</em>)</strong> terlebih dahulu sebelum menjelaskan rincian teknis pembersihan data.
+                    </div>
+                `
+            },
+            {
+                num: "09",
+                title: "Menghadapi Konflik",
+                category: "Interpersonal & Social",
+                content: `
+                    <p class="mb-2">ISTJ menghindari drama emosional, tetapi sangat berani mempertahankan prinsip kebenaran. Saat terjadi selisih paham dengan klien atau rekan:</p>
+                    <ol class="list-decimal list-inside space-y-1.5 text-slate-700 dark:text-slate-300">
+                        <li>Tolak perdebatan berbasis opini subjektif.</li>
+                        <li>Gunakan <strong>bukti tertulis dan log data (<em>audit trail</em>)</strong> sebagai penengah netral.</li>
+                        <li>Jika hubungan kerja melanggar batas integritas, putus hubungan secara profesional daripada bertahan dalam situasi toksik.</li>
+                    </ol>
+                `
+            },
+            {
+                num: "10",
+                title: "Hubungan Romantis",
+                category: "Interpersonal & Social",
+                content: `
+                    <p class="mb-2">Dalam relasi personal, ISTJ tidak tertarik pada permainan emosi atau romansa penuh drama. Komitmen dipandang sebagai sesuatu yang serius, praktis, dan dibangun di atas rasa saling menghormati ruang pribadi.</p>
+                    <p>Kamu membutuhkan waktu sendiri yang luas, dan bila memilih fokus penuh pada kemandirian serta tujuan hidup tanpa pasangan, keputusan itu sepenuhnya selaras dengan keteguhan nilai <strong>Fi</strong>-mu.</p>
+                `
+            },
+            {
+                num: "11",
+                title: "Compatibility Matrix",
+                category: "Interpersonal & Social",
+                content: `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-mono text-xs">
+                                    <th class="py-2.5 pr-4">Dinamika</th>
+                                    <th class="py-2.5 px-4">Tipe</th>
+                                    <th class="py-2.5 pl-4">Pola Kerja Sama</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <tr>
+                                    <td class="py-3 pr-4 font-medium text-sage-700 dark:text-sage-400">Selaras Secara Sistem</td>
+                                    <td class="py-3 px-4 font-mono font-semibold">ESTJ, INTJ, ENTJ</td>
+                                    <td class="py-3 pl-4">Sama-sama menghargai logika objektif (Te), efisiensi, dan kejelasan target tanpa basa-basi.</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 pr-4 font-medium text-blue-700 dark:text-blue-400">Saling Melengkapi</td>
+                                    <td class="py-3 px-4 font-mono font-semibold">ENFP, ENTP</td>
+                                    <td class="py-3 pl-4">Membantu melihat peluang kreatif baru, selama batas waktu dan kontrol eksekusi tetap di tanganmu.</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 pr-4 font-medium text-amber-700 dark:text-amber-400">Adaptasi Tinggi</td>
+                                    <td class="py-3 px-4 font-mono font-semibold">ESFP, ENFJ</td>
+                                    <td class="py-3 pl-4">Perbedaan tajam antara fokus fakta/struktur versus fokus harmoni sosial dan spontanitas.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `
+            },
+            {
+                num: "12",
+                title: "Pernikahan dan Komitmen",
+                category: "Life & Relationships",
+                content: `
+                    <p>Bagi ISTJ, komitmen jangka panjang bukan sekadar janji verbal, melainkan konsistensi tindakan sehari-hari—menepati tanggung jawab finansial, menjaga kejujuran, dan menciptakan lingkungan hidup yang stabil serta dapat diprediksi.</p>
+                `
+            },
+            {
+                num: "13",
+                title: "Keluarga",
+                category: "Life & Relationships",
+                content: `
+                    <p>Kamu menunjukkan kepedulian kepada keluarga lewat <strong>tindakan nyata dan tanggung jawab praktis</strong>—seperti membantu menyelesaikan masalah konkret. Meski demikian, kamu tetap memerlukan batasan fisik dan emosional yang sehat agar beban keluarga tidak mengganggu stabilitas mentalmu.</p>
+                `
+            },
+            {
+                num: "14",
+                title: "Parenting",
+                category: "Life & Relationships",
+                content: `
+                    <p>Sebagai gambaran gaya kepemimpinan alami, ISTJ menerapkan pola pembimbingan yang konsisten, terstruktur, dan menanamkan kemandirian sejak dini. Aturan dibuat secara jelas dan adil untuk membentuk ketangguhan menghadapi realitas.</p>
+                `
+            },
+            {
+                num: "15",
+                title: "Pertemanan",
+                category: "Life & Relationships",
+                content: `
+                    <p>Kamu menerapkan prinsip <strong>kualitas di atas kuantitas</strong>. Lingkaran sosialmu sangat selektif; kamu tidak membutuhkan puluhan kenalan permukaan, cukup segelintir orang tepercaya yang menghargai privasi dan tidak memaksamu selalu hadir di keramaian.</p>
+                `
+            },
+            {
+                num: "16",
+                title: "Karier & Pekerjaan (Freelancer Analisis Data)",
+                category: "Career & Execution",
+                content: `
+                    <p class="mb-3">Profesi <strong>Freelancer Analisis Data</strong> sangat ideal bagi ISTJ karena memberikan otonomi tinggi dan evaluasi berbasis hasil nyata (<em>output-driven</em>).</p>
+                    <div class="space-y-2.5">
+                        <div class="p-3.5 rounded-2xl bg-sage-50 dark:bg-sage-950/50 border border-sage-200 dark:border-sage-800">
+                            <div class="font-semibold text-xs uppercase font-mono text-sage-700 dark:text-sage-400">Keunggulan Kompetitif</div>
+                            <p class="text-sm mt-1">Kemampuan membangun alur kerja otomatis (Python, skrip pembersihan data, dokumentasi GitHub) menempatkan kualitas kerjamu jauh di atas rata-rata.</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80">
+                            <div class="font-semibold text-xs uppercase font-mono text-slate-600 dark:text-slate-300">Aturan Emas Freelance</div>
+                            <p class="text-sm mt-1">Wajib menggunakan <strong>kontrak/SOW (<em>Statement of Work</em>) tertulis</strong> sebelum menyentuh data klien. Rincikan format input, batas revisi maksimal, dan <em>deliverables</em> akhir.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                num: "17",
+                title: "Bekerja Bersama Orang Lain",
+                category: "Career & Execution",
+                content: `
+                    <p>Kamu bekerja paling optimal dalam tim dengan pembagian peran yang jelas (<em>clear ownership</em>). Dalam kolaborasi lintas fungsi, posisikan dirimu sebagai <strong>penjaga kualitas data (<em>data steward</em>)</strong> yang memastikan setiap keputusan didasarkan pada angka valid.</p>
+                `
+            },
+            {
+                num: "18",
+                title: "Leadership dan Pengaruh",
+                category: "Career & Execution",
+                content: `
+                    <p>Gaya kepemimpinanmu adalah <strong>Leading by Example (Memimpin Melalui Keteladanan)</strong>. Pengaruhmu tidak lahir dari suara keras, melainkan dari ketepatan analisis, ketenangan saat krisis, dan standar kerja tinggi yang mengundang rasa hormat objektif.</p>
+                `
+            },
+            {
+                num: "19",
+                title: "Uang dan Keputusan",
+                category: "Career & Execution",
+                content: `
+                    <p class="mb-3">Sebagai seorang <strong>Si-Te</strong>, naluri manajemen keuanganmu sangat konservatif, terukur, dan anti-impulsif.</p>
+                    <ul class="list-disc list-inside space-y-1.5 text-slate-700 dark:text-slate-300">
+                        <li><strong>Pisahkan Rekening:</strong> Buat rekening terpisah untuk operasional bisnis <em>freelance</em> dan kebutuhan pribadi.</li>
+                        <li><strong>Dana Darurat:</strong> Bangun cadangan minimal 6–12 bulan pengeluaran untuk meredam fluktuasi proyek lepas.</li>
+                        <li><strong>Termin Pembayaran:</strong> Terapkan uang muka (DP 30–50%) sebelum memulai pemrosesan data klien baru.</li>
+                    </ul>
+                `
+            },
+            {
+                num: "20",
+                title: "Pendidikan dan Cara Belajar",
+                category: "Growth & Strategy",
+                content: `
+                    <p>Kamu belajar paling efektif melalui <strong>praktik terstruktur (<em>hands-on</em>) dan referensi otoritatif</strong> (dokumentasi resmi, buku teks teknis, studi kasus nyata). Saat mempelajari <em>library</em> baru, kamu menguasainya hingga detail terkecil sebelum menerapkannya.</p>
+                `
+            },
+            {
+                num: "21",
+                title: "Bertumbuh Tanpa Kehilangan Diri",
+                category: "Growth & Strategy",
+                content: `
+                    <p class="mb-2">Pertumbuhan sejati bagi seorang ISTJ bukanlah memaksakan diri menjadi ekstrovert, melainkan:</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 text-sage-600 shrink-0 mt-1"></i><span>Menerima bahwa <strong>"selesai dengan akurat" lebih baik daripada "sempurna tanpa akhir"</strong>.</span></li>
+                        <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 text-sage-600 shrink-0 mt-1"></i><span>Memanfaatkan fungsi <strong>Ne</strong> secara sehat untuk mengeksplorasi peluang karier baru, bukan sumber kecemasan.</span></li>
+                        <li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 text-sage-600 shrink-0 mt-1"></i><span>Melepaskan beban masa lalu dan membiarkan kompetensi terkinimu menjadi satu-satunya identitas profesional.</span></li>
+                    </ul>
+                `
+            },
+            {
+                num: "22",
+                title: "Rencana 30 Hari Implementasi ISTJ",
+                category: "Growth & Strategy",
+                content: `
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="font-mono text-xs font-bold text-sage-700 dark:text-sage-400">HARI 01–07 • STANDARDISASI</div>
+                            <p class="text-xs mt-1 text-slate-600 dark:text-slate-400">Buat template SOP <em>freelance</em> pribadi (proposal, daftar pertanyaan audit data klien, struktur folder proyek).</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="font-mono text-xs font-bold text-sage-700 dark:text-sage-400">HARI 08–14 • BUKTI KERJA</div>
+                            <p class="text-xs mt-1 text-slate-600 dark:text-slate-400">Rapikan 1–2 studi kasus analisis data terbaik di GitHub lengkap dengan visualisasi dan dampak bisnis.</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="font-mono text-xs font-bold text-sage-700 dark:text-sage-400">HARI 15–21 • AKUISISI KLIEN</div>
+                            <p class="text-xs mt-1 text-slate-600 dark:text-slate-400">Kirim penawaran terpersonalisasi ke 10–15 calon klien/perusahaan dengan tautan portofolio teknis.</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="font-mono text-xs font-bold text-sage-700 dark:text-sage-400">HARI 22–30 • KALIBRASI</div>
+                            <p class="text-xs mt-1 text-slate-600 dark:text-slate-400">Evaluasi rasio respons penawaran berdasarkan data dan kunci jadwal kerja harianmu.</p>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        // Daftar Referensi Bacaan
+        const references = [
+            {
+                title: "Gifts Differing: Understanding Personality Type",
+                author: "Isabel Briggs Myers & Peter B. Myers",
+                desc: "Buku fondasi utama yang menjelaskan mekanisme empat preferensi MBTI dan cara tipe ISTJ memproses realitas praktis."
+            },
+            {
+                title: "Psychological Types",
+                author: "Carl Gustav Jung",
+                desc: "Karya klasik yang memperkenalkan konsep fungsi kognitif Introverted Sensing (Si) dan Extraverted Thinking (Te)."
+            },
+            {
+                title: "Was That Really Me? How Everyday Stress Brings Out Our Hidden Personality",
+                author: "Naomi L. Quenk",
+                desc: "Referensi mendalam khusus mengenai reaksi stres fungsi inferior (Ne Grip) pada ISTJ dan strategi pemulihannya."
+            },
+            {
+                title: "Type Talk at Work: How the 16 Personality Types Determine Your Success on the Job",
+                author: "Otto Kroeger, Janet M. Thuesen, & Hile Rutledge",
+                desc: "Panduan praktis komunikasi lintas tipe kepribadian, negosiasi profesional, dan kepemimpinan di dunia kerja."
+            },
+            {
+                title: "Building Blocks of Personality Type",
+                author: "Leona Haas & Mark Hunziker",
+                desc: "Penjelasan terstruktur mengenai interaksi antar-fungsi kognitif dan cara mengelola titik buta tanpa kehilangan jati diri."
+            }
+        ];
+
+        // Checklist Items untuk 30-Day Tracker
+        const defaultChecklist = [
+            { id: "chk1", text: "Susun template kontrak / Statement of Work (SOW) & daftar pertanyaan audit data klien" },
+            { id: "chk2", text: "Rapikan struktur folder & README.md proyek Python utama di GitHub" },
+            { id: "chk3", text: "Pisahkan rekening bank operasional freelance dan dana darurat pribadi" },
+            { id: "chk4", text: "Tetapkan jam Deep Work harian & jam Hard Stop bebas notifikasi klien" },
+            { id: "chk5", text: "Kirim 10 proposal/lamaran terkurasi dengan melampirkan bukti portofolio GitHub" }
+        ];
+
+        // Render Konten Bab & Navigasi
+        const chaptersContainer = document.getElementById('chaptersContainer');
+        const desktopNavList = document.getElementById('desktopNavList');
+        const mobileNavList = document.getElementById('mobileNavList');
+
+        function renderManual(filterText = '') {
+            const query = filterText.toLowerCase().trim();
+            chaptersContainer.innerHTML = '';
+            desktopNavList.innerHTML = '';
+            mobileNavList.innerHTML = '';
+
+            manualChapters.forEach(ch => {
+                const match = ch.title.toLowerCase().includes(query) || 
+                              ch.num.includes(query) || 
+                              ch.content.toLowerCase().includes(query);
+
+                // Navigasi Link
+                const navLinkHTML = `
+                    <a href="#bab-${ch.num}" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-sage-100/70 dark:hover:bg-slate-800/80 hover:text-sage-900 dark:hover:text-white transition">
+                        <span class="font-mono text-xs text-sage-700 dark:text-sage-400 font-semibold">${ch.num}</span>
+                        <span class="truncate">${ch.title}</span>
+                    </a>
+                `;
+                desktopNavList.insertAdjacentHTML('beforeend', navLinkHTML);
+                mobileNavList.insertAdjacentHTML('beforeend', navLinkHTML);
+
+                if (!match) return;
+
+                // Kartu Bab
+                const cardHTML = `
+                    <article id="bab-${ch.num}" class="scroll-mt-24 bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xs transition hover:border-sage-300 dark:hover:border-sage-700">
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <span class="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-sage-100 dark:bg-sage-900/70 text-sage-800 dark:text-sage-300">
+                                    BAB ${ch.num}
+                                </span>
+                                <span class="font-mono text-xs text-slate-400 uppercase tracking-wider hidden sm:inline">
+                                    ${ch.category}
+                                </span>
+                            </div>
+                            <button onclick="copyChapter('${ch.num}', '${ch.title}')" class="p-1.5 rounded-lg text-slate-400 hover:text-sage-700 dark:hover:text-sage-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition no-print" title="Salin ringkasan bab">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-4">
+                            ${ch.title}
+                        </h3>
+                        <div class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                            ${ch.content}
+                        </div>
+                    </article>
+                `;
+                chaptersContainer.insertAdjacentHTML('beforeend', cardHTML);
+            });
+
+            // Tambah link referensi di navigasi
+            const refNav = `
+                <a href="#referensi" class="flex items-center gap-2.5 px-3 py-2 mt-2 border-t border-slate-200 dark:border-slate-800 pt-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-sage-100/70 dark:hover:bg-slate-800/80 transition">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5 text-sage-700 dark:text-sage-400"></i>
+                    <span class="truncate font-medium">Referensi Bacaan</span>
+                </a>
+            `;
+            desktopNavList.insertAdjacentHTML('beforeend', refNav);
+            mobileNavList.insertAdjacentHTML('beforeend', refNav);
+
+            lucide.createIcons();
+            attachMobileNavClose();
+        }
+
+        // Render Referensi
+        const referencesContainer = document.getElementById('referencesContainer');
+        references.forEach((ref, idx) => {
+            referencesContainer.insertAdjacentHTML('beforeend', `
+                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h4 class="font-semibold text-sm text-slate-900 dark:text-white">${idx + 1}. ${ref.title}</h4>
+                            <div class="font-mono text-xs text-sage-700 dark:text-sage-400 mt-0.5">${ref.author}</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">${ref.desc}</p>
+                </div>
+            `);
+        });
+
+        // Interactive Checklist dengan LocalStorage
+        const checklistContainer = document.getElementById('checklistItems');
+        const checklistScore = document.getElementById('checklistScore');
+        let savedChecks = JSON.parse(localStorage.getItem('istj_manual_checks') || '{}');
+
+        function renderChecklist() {
+            checklistContainer.innerHTML = '';
+            let completed = 0;
+
+            defaultChecklist.forEach(item => {
+                const isChecked = !!savedChecks[item.id];
+                if (isChecked) completed++;
+
+                const label = document.createElement('label');
+                label.className = `flex items-start gap-3 p-3.5 rounded-2xl border cursor-pointer transition ${
+                    isChecked 
+                    ? 'bg-sage-900/60 border-sage-500/50 text-sage-200 line-through' 
+                    : 'bg-sage-700/60 border-sage-600/50 hover:bg-sage-700 text-white'
+                }`;
+                label.innerHTML = `
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} class="mt-0.5 w-4 h-4 rounded accent-sage-400 cursor-pointer">
+                    <span class="text-xs sm:text-sm leading-snug">${item.text}</span>
+                `;
+                label.querySelector('input').addEventListener('change', (e) => {
+                    savedChecks[item.id] = e.target.checked;
+                    localStorage.setItem('istj_manual_checks', JSON.stringify(savedChecks));
+                    renderChecklist();
+                });
+                checklistContainer.appendChild(label);
+            });
+
+            const pct = Math.round((completed / defaultChecklist.length) * 100);
+            checklistScore.textContent = `${pct}%`;
+        }
+
+        // Fitur Copy Bab
+        function copyChapter(num, title) {
+            const el = document.getElementById(`bab-${num}`);
+            const text = `BAB ${num}: ${title}\n\n${el.querySelector('div:last-child').innerText}`;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(`Bab ${num} disalin ke clipboard`);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // Search Handler
+        document.getElementById('searchInput').addEventListener('input', (e) => renderManual(e.target.value));
+        document.getElementById('mobileSearchInput').addEventListener('input', (e) => renderManual(e.target.value));
+
+        // Mobile Drawer Logic
+        const mobileDrawer = document.getElementById('mobileDrawer');
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => mobileDrawer.classList.remove('hidden'));
+        document.getElementById('closeDrawerBtn').addEventListener('click', () => mobileDrawer.classList.add('hidden'));
+        document.getElementById('drawerBackdrop').addEventListener('click', () => mobileDrawer.classList.add('hidden'));
+
+        function attachMobileNavClose() {
+            mobileNavList.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => mobileDrawer.classList.add('hidden'));
+            });
+        }
+
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (localStorage.getItem('istj_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('istj_theme', isDark ? 'dark' : 'light');
+        });
+
+        // Reading Progress Bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            document.getElementById('readingProgress').style.width = `${progress}%`;
+        });
+
+        // Inisialisasi
+        renderManual();
+        renderChecklist();
+    </script>
+</body>
+</html>
