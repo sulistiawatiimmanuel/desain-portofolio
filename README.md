@@ -1,41 +1,31 @@
-# desain-portofolio
+# 
 
 <!-- Banner Header (Ganti link gambar setelah kamu mendesain dan mengunggah bannermu) -->
 <p align="center">
   <img src="https://via.placeholder.com/1200x300/0a192f/64ffda?text=Oceanography+%7C+GIS+%7C+Marine+Data+Science" alt="Oceanography Banner" width="100%"/>
 </p>
-
 <!-- Profile Views & Total Stars Badges -->
 <p align="right">
   <img src="https://komarev.com/ghpvc/?username=[USERNAME_GITHUB_KAMU]&label=Profile%20Views&color=0e75b6&style=flat" alt="Profile Views" />
 </p>
 
 <p align="left">
-  <img src="https://img.shields.io/github/stars/[USERNAME_GITHUB_KAMU]?affiliations=OWNER%2CCOLLABORATOR&style=flat&color=0e75b6&label=Total%20Stars" alt="Total Stars" />
+  <img src="https://img.shields.io/github/stars/[https://github.com/sulistiawatiimmanuel]?affiliations=OWNER%2CCOLLABORATOR&style=flat&color=0e75b6&label=Total%20Stars" alt="Total Stars" />
 </p>
 
-### Oceanographer | Marine Spatial Analyst | Oceanographic Data Science
+### Oceanographer | Marine Spatial Analyst | Data Science
 
 Exploring ocean dynamics, marine ecosystems, and climate variability through geospatial technology and scientific computing.
 
 <!-- Social Media & Contact Badges -->
 <p align="left">
-  <a href="[LINK_LINKEDIN_KAMU]" target="_blank">
+  <a href="[https://www.linkedin.com/in/sulistiawati-imanuel-l-40aa27339/]" target="_blank">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white" alt="LinkedIn" />
   </a>
-  <a href="[LINK_MEDIUM_ATAU_BLOG]" target="_blank">
-    <img src="https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white" alt="Medium" />
-  </a>
-  <a href="[LINK_INSTAGRAM_KAMU]" target="_blank">
-    <img src="https://img.shields.io/badge/Instagram-E4405F?style=flat&logo=instagram&logoColor=white" alt="Instagram" />
-  </a>
-  <a href="[LINK_KAGGLE_KAMU]" target="_blank">
+  <a href="[https://www.kaggle.com/sulistiawatiimmanuel]" target="_blank">
     <img src="https://img.shields.io/badge/Kaggle-20BEFF?style=flat&logo=Kaggle&logoColor=white" alt="Kaggle" />
   </a>
-  <a href="[LINK_RPUBS_KAMU]" target="_blank">
-    <img src="https://img.shields.io/badge/RPubs-75AADB?style=flat&logo=R&logoColor=white" alt="RPubs" />
-  </a>
-  <a href="mailto:[EMAIL_KAMU]">
+  <a href="mailto:[sulistiawatiimanuella09@gmail.com]">
     <img src="https://img.shields.io/badge/Email-D14836?style=flat&logo=gmail&logoColor=white" alt="Email" />
   </a>
 </p>
